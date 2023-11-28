@@ -1,0 +1,38 @@
+systemctl stop ufw
+systemctl disable ufw
+apt update
+apt update --fix-missing
+apt upgrade
+apt install -y  vim openssh-server python3 perl
+apt install -y gcc g++ manpages manpages-dev freebsd-manpages man2html manpages-posix manpages-posix-dev glibc-doc
+apt install -y virtualbox virtualbox-guest-additions-iso
+apt install -y autofs
+apt install -y rpcbind
+apt install -y nis
+echo "ALL:ALL" >> /etc/hosts.allow
+echo "rpcbind : 192.168.2.2" >> /etc/hosts.allow
+echo "domain  vectorinstitute.in  server  192.168.2.2" >> /etc/yp.conf
+echo "/home	 /etc/auto.home --timeout=600" >> /etc/auto.master
+echo "* 	-fstype=nfs,soft,iintr,rsize=8192,nsuid,tcp	 192.168.2.2:/home/&" > /etc/auto.home
+echo "+auto.home" >> /etc/auto.home
+sed -i '/passwd:/ s/$/ nis/' /etc/nsswitch.conf
+sed -i '/group:/ s/$/ nis/' /etc/nsswitch.conf
+sed -i '/shadow:/ s/$/ nis/' /etc/nsswitch.conf
+sed -i '/hosts:/ s/$/ nis/' /etc/nsswitch.conf
+echo 'session optional pam_mkhomedir.so skel=/etc/skel umask=007' >> /etc/pam.d/common-session
+sed -e '/IPAddressDeny=any/ s/^#*/#/' -i /lib/systemd/system/systemd-logind.service
+update-rc.d nis defaults
+update-rc.d rpcbind defaults
+update-rc.d autofs defaults
+useradd -d /labexam labexam -p p9PhJ2Pf9K94g -s /bin/bash
+apt install lightdm
+touch /etc/lightdm/lightdm.conf.d/50-unity-greeter.conf
+echo "[Seat:*]" >> /etc/lightdm/lightdm.conf.d/50-unity-greeter.conf
+echo "greeter-hide-users=true" >> /etc/lightdm/lightdm.conf.d/50-unity-greeter.conf
+echo "greeter-show-manual-login=true" >> /etc/lightdm/lightdm.conf.d/50-unity-greeter.conf
+echo "allow-guest=false" >> /etc/lightdm/lightdm.conf.d/50-unity-greeter.conf
+systemctl enable rpcbind nis autofs
+sed -i 's/\/home\/vector/\/vector/g' /etc/passwd
+reboot
+
+

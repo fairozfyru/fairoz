@@ -1,0 +1,40 @@
+sed -i '3s/^/192.168.1.3 ns1 nis-server vectorinstitute.in \n/' /etc/hosts  
+apt update 
+apt install nis 
+apt install net-tools 
+apt install build-essential 
+apt install git -y 
+apt install snap -y 
+sudo snap install notepadqq 
+apt upgrade 
+apt install nfs-kernel-server
+   
+sed -i 's/NISSERVER=false/NISSERVER=master/g' /etc/default/nis
+ 
+sed -i 's/NISCLIENT=true/NISCLIENT=false/g' /etc/default/nis
+ 
+sed -e '/0.0.0.0/ s/^#*/#/' -i /etc/ypserv.securenets
+ 
+echo '255.255.255.0   192.168.1.0' >> /etc/ypserv.securenets
+ 
+/usr/lib/yp/ypinit -m
+
+systemctl restart rpcbind nis 
+ 
+
+#### create user for testing ### 
+
+useradd -m client -s /bin/bash 
+
+passwd client 
+
+make -C /var/yp 
+
+################################ 
+
+ 
+
+sed -i '8s/^/Domain = vectorinstitute.in \n/' /etc/idmapd.conf 
+echo '/home *(rw,no_root_squash)' >> /etc/exports 
+systemctl restart nfs-kernel-server 
+sudo ufw disable 

