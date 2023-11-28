@@ -1,0 +1,32 @@
+apt install lightdm
+
+### enable login ###
+
+cd /usr/share/lightdm/lightdm.conf.d/
+vim 50-ubuntu.conf
+greeter-show-manual-login=true #add this in last
+
+#reboot
+
+apt update 
+sudo ufw disable
+apt install vim -y
+apt install g++ -y
+apt install nis -y
+apt install autofs -y 
+apt install -y openssh-server python3 perl
+apt install -y gcc manpages manpages-dev freebsd-manpages man2html manpages-posix manpages-posix-dev glibc-doc
+apt install -y virtualbox virtualbox-guest-additions-iso
+sed -i '3s/^/192.168.1.1 ns1 nis-server vectorinstitute.in \n/' /etc/hosts 
+echo 'domain vectorinstitute.in server ns1' >> /etc/yp.conf 
+echo '192.168.1.1:/home       /home   nfs     defaults        0       0' >> /etc/fstab 
+sed -i '/passwd:/ s/$/ nis/' /etc/nsswitch.conf 
+sed -i '/group:/ s/$/ nis/' /etc/nsswitch.conf 
+sed -i '/shadow:/ s/$/ nis/' /etc/nsswitch.conf 
+sed -i '/hosts:/ s/$/ nis/' /etc/nsswitch.conf 
+echo '/-      /etc/auto.mount' >> /etc/auto.master 
+touch /etc/auto.mount 
+echo '*	-fstype=nfs,soft,iintr,rsize=8192,nsuid,tcp 192.168.1.1:/home/&' >> /etc/auto.mount 
+
+
+#reboot
